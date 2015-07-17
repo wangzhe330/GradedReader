@@ -15,8 +15,17 @@
         android:lineSpacingMultiplier="1.2"
         android:scrollbars="vertical"
         android:singleLine="false"
-        android:maxLines="20"
-
+        android:maxLines="23"
+        android:textSize="20sp"
+        android:layout_above="@+id/show_btn0"
         />
+    <Button
+        android:id="@+id/show_btn0"
+        android:text="高亮生词"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
 </RelativeLayout>

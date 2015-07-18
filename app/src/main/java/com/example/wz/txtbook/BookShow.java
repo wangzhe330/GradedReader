@@ -1,5 +1,6 @@
 package com.example.wz.txtbook;
 
+import android.app.ActionBar;
 import android.content.Intent;
 import android.content.res.AssetManager;
 import android.graphics.Color;
@@ -44,6 +45,9 @@ public class BookShow extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_book_show);
+
+        ActionBar actionBar = getActionBar();
+
 
         //获取从MainActivity 传递过来的 数据： lesson文件的名字
         Intent intent = getIntent();
@@ -245,10 +249,7 @@ public class BookShow extends ActionBarActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
+
 
         return super.onOptionsItemSelected(item);
     }

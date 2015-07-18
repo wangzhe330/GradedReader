@@ -4,7 +4,7 @@
     android:layout_height="wrap_content"
     android:textSize="24dp"
     android:padding="10px"
-    android:shadowColor="#ff839fff"
+    android:textColor="#fff"
     android:shadowDx="4"
     android:shadowDy="4"
     android:shadowRadius="2"

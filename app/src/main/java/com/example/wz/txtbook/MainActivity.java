@@ -1,5 +1,6 @@
 package com.example.wz.txtbook;
 
+import android.app.ActionBar;
 import android.content.Intent;
 import android.content.res.AssetManager;
 import android.support.v7.app.ActionBarActivity;
@@ -37,6 +38,7 @@ public class MainActivity extends ActionBarActivity {
         //wz 获取lesson 的名字
         final ListView list_book = (ListView)findViewById(R.id.list_book);
         ArrayList<String>leesonName = getLessonFromAssets();
+
         //绑定数据并显示
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this , R.layout.array_item , leesonName );
         list_book.setAdapter(adapter);

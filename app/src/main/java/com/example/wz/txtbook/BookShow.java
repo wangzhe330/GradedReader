@@ -46,9 +46,6 @@ public class BookShow extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_book_show);
 
-        ActionBar actionBar = getActionBar();
-
-
         //获取从MainActivity 传递过来的 数据： lesson文件的名字
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();

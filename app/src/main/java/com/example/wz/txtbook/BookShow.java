@@ -14,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import java.io.BufferedReader;
@@ -28,11 +29,17 @@ import java.util.HashSet;
 public class BookShow extends ActionBarActivity {
 
     TextView tv;
+    TextView tvLigthLevel;
     InputStream inputStream;
     InputStream inputStreamLight;       //高亮关键词的输入流
+    String txt;                         //内存中存储单篇lesson的String
     //HashMap hmLight = new HashMap();    //key:高亮关键词 value:高亮等级
     HashMap<String,Integer> hmLight = new HashMap<String,Integer>();
     HashSet<String> hsLight = new HashSet<String>();
+    int lightLevel = 0;                 //高亮等级为1级
+    int ligtStatus_open = 1;            //高亮状态：打开
+    int ligtStatus_close = 2;        //高亮状态：关闭
+    int lightStatusSwitch = ligtStatus_close;       //高亮开关，初始化为关闭
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,6 +55,10 @@ public class BookShow extends ActionBarActivity {
         tv = (TextView)findViewById(R.id.show_tv0);
         tv.setMovementMethod(ScrollingMovementMethod.getInstance());
 
+        //显示高亮级别的textview
+        tvLigthLevel = (TextView)findViewById(R.id.show_tv1);
+        tvLigthLevel.setText("LightLevel:"+lightLevel );
+
         AssetManager assetManager = this.getAssets();
         //inputStream = getResources().openRawResource(R.raw.nce4_book);  //之前放在raw文件夹里面测试用的
         try {
@@ -56,7 +67,7 @@ public class BookShow extends ActionBarActivity {
             Log.e("ioe",e.getMessage());
         }
         //从inputStream中获取String数据:txt
-        final String txt = getString(inputStream);
+        txt = getString(inputStream);
         tv.setText(txt);
 
         //从raw中的分级表获取分级信息,存入hmLight
@@ -86,45 +97,94 @@ public class BookShow extends ActionBarActivity {
             Log.e("ioe",e.getMessage());
         }
 
-        //Button 设置 是否高亮
-        Button btnLight = (Button)findViewById(R.id.show_btn0);
-        btnLight.setOnClickListener( new View.OnClickListener() {
+        //seekbar 获取用户设置的高亮等级
+        SeekBar seekBar = (SeekBar)findViewById(R.id.show_sb0);
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
-            public void onClick(View v) {
-                SpannableString sp = new SpannableString(txt);
-
-                //遍历字符串 如果在hashSet中找到了就高亮，实现了未分级高亮功能
-                int start,end;
-                boolean flag  = false;
-                int i = 0;
-                char[] ch = txt.toCharArray();
-                try {
-                    while (i < txt.length()) {
-                        while (i < txt.length() && !Character.isLetter(ch[i])) {
-                            i++;
-                        }
-                        start = i;
-                        while (i < txt.length() && Character.isLetter(ch[i])) {
-                            i++;
-                        }
-                        end = i;
-                        String target = txt.substring(start, end);
-                        if ((start < end) && target != null) {
-                            if(hsLight.contains(target) ) {
-                                sp.setSpan(new ForegroundColorSpan(Color.RED), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                                Log.d("wzdebug", "高亮一个词" + txt.substring(start, end));
-                            }
-                        }
-                    }
-                    Log.d("wzdebug","高亮 done");
-                    tv.setText(sp);
-                }catch (Exception e){
-                    Log.e("wzdebug",e.getMessage());
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                lightLevel = progress;
+                //显示高亮级别
+                tvLigthLevel.setText("LightLevel:"+lightLevel );
+                if(lightStatusSwitch == ligtStatus_open) {
+                    lightByLevel(lightLevel);
                 }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
 
             }
         });
 
+
+        //Button 设置 是否高亮
+        final Button btnLight = (Button)findViewById(R.id.show_btn0);
+        btnLight.setOnClickListener( new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(lightStatusSwitch == ligtStatus_open) {
+
+                    tv.setText(txt);
+                    btnLight.setText("高亮生词");
+                    lightStatusSwitch = ligtStatus_close;
+                }else{
+                    lightByLevel(lightLevel);
+                    btnLight.setText("关闭高亮");
+                    lightStatusSwitch = ligtStatus_open;
+                }
+            }
+        });
+
+    }
+
+    /**
+     * 高亮功能
+     * @param level 指定高亮级别
+     */
+    public void lightByLevel(int level ){
+        if(level>6||level<0){
+            Log.e("wzerror","level out of limits");
+            return ;
+        }
+
+        SpannableString sp = new SpannableString(txt);
+
+        //遍历字符串 如果在hashSet中找到了就高亮，实现了未分级高亮功能
+        int start,end;
+        boolean flag  = false;
+        int i = 0;
+        char[] ch = txt.toCharArray();
+        try {
+            while (i < txt.length()) {
+                while (i < txt.length() && !Character.isLetter(ch[i])) {
+                    i++;
+                }
+                start = i;
+                while (i < txt.length() && Character.isLetter(ch[i])) {
+                    i++;
+                }
+                end = i;
+                String target = txt.substring(start, end);
+                if ((start < end) && target != null) {
+                    if(hmLight.containsKey(target)){
+                        int levelTmp = hmLight.get(target);
+                        if(levelTmp < lightLevel) {
+                            sp.setSpan(new ForegroundColorSpan(Color.RED), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                            Log.d("wzdebug", "高亮一个词" + txt.substring(start, end));
+                        }
+                    }
+                }
+            }
+            Log.d("wzdebug","高亮 done");
+            tv.setText(sp);
+        }catch (Exception e){
+            Log.e("wzdebug",e.getMessage());
+        }
     }
 
     /**

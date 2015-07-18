@@ -28,4 +28,28 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
+    <SeekBar
+        android:id="@+id/show_sb0"
+        android:layout_width="300dp"
+        android:layout_height="10dp"
+        android:max="6"
+        android:progress="2"
+        android:layout_alignParentBottom="true"
+        android:layout_toRightOf="@+id/show_btn0"
+        android:layout_marginLeft="37dp"
+        android:layout_marginStart="37dp"
+        android:layout_alignRight="@+id/show_tv0"
+        android:layout_alignEnd="@+id/show_tv0"
+        android:layout_alignTop="@+id/show_btn0"
+        />
+    <TextView
+        android:id="@+id/show_tv1"
+        android:text="LightLevel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" />
+
+
+
 </RelativeLayout>

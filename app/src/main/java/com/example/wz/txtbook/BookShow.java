@@ -223,7 +223,6 @@ public class BookShow extends ActionBarActivity {
 
         try {
             while (   ( (line = reader.readLine()) != null) ) {
-                line = reader.readLine();
                 sb.append(line);
                 sb.append("\n");
             }

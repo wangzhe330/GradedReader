@@ -92,7 +92,6 @@ public class BookShow extends ActionBarActivity {
                     hmLight.put( word , level );
                     hsLight.add(word);
                 }
-                line = reader.readLine();
             }
         }catch (IOException e){
             Log.e("ioe",e.getMessage());

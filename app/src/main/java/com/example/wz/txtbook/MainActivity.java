@@ -24,6 +24,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -65,7 +72,9 @@ public class MainActivity extends ActionBarActivity {
      * @return
      */
     private ArrayList<String> getLessonFromAssets(){
-        ArrayList<String> list = new ArrayList<String>();
+        ArrayList<String> list = new ArrayList<String>();           //中间过程list
+        ArrayList<String> listResult = new ArrayList<String>();     //最后返回的结果list
+
         String suffix = null;
         String fileName=null;
 
@@ -78,7 +87,38 @@ public class MainActivity extends ActionBarActivity {
         }catch (IOException e){
             Log.e("ioe",e.getMessage());
         }
-        return list;
+
+        //list中存储了从assetManager获得的文件名，下面将按文件名的数字来对文件名进行排序，并添加到listResult中，并返回
+        if(  !list.isEmpty()) {
+           // String[] temp = new String[list.size()];
+            HashMap<String,Integer> map = new HashMap<String,Integer>();
+            for(String s:list){
+                //用正则 表达式匹配文件名中的数字
+                String regEx="[^0-9]";
+                Pattern p = Pattern.compile(regEx);
+                Matcher m = p.matcher(s);
+                String num = m.replaceAll("").trim();
+                Log.d("wzdebug" ,"lesson========"+ num);
+                int index = Integer.parseInt(num);
+                map.put(s,index);                           //key是文件名   value是文件名的中数字
+            }
+
+            List<Map.Entry<String, Integer>> infoIds =
+                    new ArrayList<Map.Entry<String, Integer>>(map.entrySet());
+            Collections.sort(infoIds , new Comparator<Map.Entry<String, Integer>>() {
+                public int compare(Map.Entry<String, Integer> o1, Map.Entry<String, Integer> o2) {
+                    return ( o1.getValue() - o2.getValue());
+                    //return (o1.getKey()).toString().compareTo(o2.getKey());
+                }
+            });
+            //按value排序后
+            for (int i = 0; i < infoIds.size(); i++) {
+                String name = infoIds.get(i).getKey();
+                listResult.add(name);
+            }
+        }
+
+        return listResult;
     }
 
 

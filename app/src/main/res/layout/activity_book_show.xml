@@ -35,7 +35,9 @@
         android:layout_width="300dp"
         android:layout_height="10dp"
         android:max="6"
-        android:progress="2"
+        android:progress="0"
+        android:progressDrawable="@drawable/bg_bar"
+        android:thumb="@drawable/thumb_bar"
         android:layout_alignParentBottom="true"
         android:layout_toRightOf="@+id/show_btn0"
         android:layout_marginLeft="37dp"
@@ -47,6 +49,7 @@
     <TextView
         android:id="@+id/show_tv1"
         android:text="LightLevel"
+        android:textColor="#ffff7238"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"

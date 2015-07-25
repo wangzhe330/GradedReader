@@ -46,6 +46,9 @@ public class BookShow extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_book_show);
 
+        //获取Application Context
+        WordLib wordLib = (WordLib)getApplicationContext();
+
         //获取从MainActivity 传递过来的 数据： lesson文件的名字
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
@@ -71,30 +74,36 @@ public class BookShow extends ActionBarActivity {
         txt = getString(inputStream);
         tv.setText(txt);
 
-        //从raw中的分级表获取分级信息,存入hmLight
-        inputStreamLight = getResources().openRawResource(R.raw.nce4_words);
-        InputStreamReader inputStreamLightReader = null;
-        try {
-            inputStreamLightReader = new InputStreamReader(inputStreamLight, "gbk");
-        } catch (UnsupportedEncodingException e1) {
-            e1.printStackTrace();
-        }
-        BufferedReader reader = new BufferedReader(inputStreamLightReader);
-        String line = null;
-        try{
-            while( (line =reader.readLine()) != null ){
-                String word;
-                int level;
-                String[] temp = line.split("\\t");
-                if (temp.length == 2 && isNumeric(temp[1])){
-                    word = temp[0];
-                    level =  Integer.parseInt(temp[1]);
-                    hmLight.put( word , level );
-                    hsLight.add(word);
-                }
+        if( !wordLib.getSetStatue() ) {
+            //如果还没有读取过单词分级文件
+            //从raw中的分级表获取分级信息,存入hmLight
+            inputStreamLight = getResources().openRawResource(R.raw.nce4_words);
+            InputStreamReader inputStreamLightReader = null;
+            try {
+                inputStreamLightReader = new InputStreamReader(inputStreamLight, "gbk");
+            } catch (UnsupportedEncodingException e1) {
+                e1.printStackTrace();
             }
-        }catch (IOException e){
-            Log.e("ioe",e.getMessage());
+            BufferedReader reader = new BufferedReader(inputStreamLightReader);
+            String line = null;
+            try {
+                while ((line = reader.readLine()) != null) {
+                    String word;
+                    int level;
+                    String[] temp = line.split("\\t");
+                    if (temp.length == 2 && isNumeric(temp[1])) {
+                        word = temp[0];
+                        level = Integer.parseInt(temp[1]);
+                        hmLight.put(word, level);
+                        hsLight.add(word);
+                    }
+                }
+            } catch (IOException e) {
+                Log.e("ioe", e.getMessage());
+            }
+        }else{
+            //如果已经读取过分级词库文件了，则直接获取数据
+            hmLight = wordLib.getWordLib();
         }
 
         //seekbar 获取用户设置的高亮等级

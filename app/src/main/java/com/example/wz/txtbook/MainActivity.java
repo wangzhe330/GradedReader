@@ -37,10 +37,16 @@ public class MainActivity extends ActionBarActivity {
 
     int readLast = 0;
     int readLen = 100;
+
+    InputStream inputStreamLight;       //高亮关键词的输入流
+    HashMap<String,Integer> hmLight = new HashMap<String,Integer>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        WordLib wordLib = (WordLib)getApplicationContext();
 
         //wz 获取lesson 的名字
         final ListView list_book = (ListView)findViewById(R.id.list_book);
@@ -64,8 +70,51 @@ public class MainActivity extends ActionBarActivity {
                 startActivity(intent);
             }
         });
-    }
 
+        if( !wordLib.getSetStatue()) {
+            //从raw中的分级表获取分级信息,存入hmLight
+            inputStreamLight = getResources().openRawResource(R.raw.nce4_words);
+            InputStreamReader inputStreamLightReader = null;
+            try {
+                inputStreamLightReader = new InputStreamReader(inputStreamLight, "gbk");
+            } catch (UnsupportedEncodingException e1) {
+                e1.printStackTrace();
+            }
+            BufferedReader reader = new BufferedReader(inputStreamLightReader);
+            String line = null;
+            try {
+                while ((line = reader.readLine()) != null) {
+                    String word;
+                    int level;
+                    String[] temp = line.split("\\t");
+                    if (temp.length == 2 && isNumeric(temp[1])) {
+                        word = temp[0];
+                        level = Integer.parseInt(temp[1]);
+                        hmLight.put(word, level);
+                    }
+                }
+            wordLib.setWordLib(hmLight);
+            wordLib.setSetStatue();
+
+
+            } catch (IOException e) {
+                Log.e("ioe", e.getMessage());
+            }
+        }
+    }
+    /**
+     * 判断String是否是纯数字
+     * @param str
+     * @return
+     */
+    public static boolean isNumeric(String str){
+        for (int i = str.length();--i>=0;){
+            if (!Character.isDigit(str.charAt(i))){
+                return false;
+            }
+        }
+        return true;
+    }
     /**
      * 从assets文件夹中读取列表
      * @param menu
